@@ -77,7 +77,17 @@ const items = ref([
         url: "/reports"
     },
 ])
-const showContent = ref(true)
+const showContent = ref(false)
+
+// lifecycles
+onMounted(() => {
+    const isAdminStorage = localStorage.getItem("isAdmin")
+    if(isAdminStorage == "true") {
+        showContent.value = true
+    } else {
+        navigateTo('/login')
+    }
+})
 
 // methods
 const navigateToPage = async (page: any) => {
