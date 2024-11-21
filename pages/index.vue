@@ -5,7 +5,7 @@
     <v-container>
       <v-row>
         <v-col>
-          <v-card color="indigo" variant="flat" v-if="usersData">
+          <v-card color="indigo" variant="flat" v-if="!loadingUsers">
             <v-card-item title="Utilisateurs">
               <template v-slot:subtitle>
                 <v-icon
@@ -46,7 +46,7 @@
         </v-col>
 
         <v-col>
-          <v-card color="indigo" variant="flat" v-if="projectsData">
+          <v-card color="indigo" variant="flat" v-if="!loadingProjects">
             <v-card-item title="Projets">
               <template v-slot:subtitle>
                 <v-icon
@@ -120,6 +120,41 @@
 </template>
 
 <script lang="ts" setup>
-  const { data : usersData } = await useFetch("http://localhost:3002/users");
-  const { data : projectsData } = await useFetch("http://localhost:3002/projects");
+import { ref, onMounted } from 'vue'
+
+const loadingUsers = ref(true)
+const loadingProjects = ref(true)
+const usersData = ref([])
+const projectsData = ref([])
+
+const fetchUsers = async () => {
+  try {
+    const { data } = await useFetch("http://localhost:3002/users")
+    if(data.value) {
+      usersData.value = data.value
+    }
+  } catch (error) {
+    console.error('Failed to fetch users:', error)
+  } finally {
+    loadingUsers.value = false
+  }
+}
+
+const fetchProjects = async () => {
+  try {
+    const { data } = await useFetch("http://localhost:3002/projects")
+    if(data.value) {
+      projectsData.value = data.value
+    }
+  } catch (error) {
+    console.error('Failed to fetch projects:', error)
+  } finally {
+    loadingProjects.value = false
+  }
+}
+
+onMounted(() => {
+  fetchUsers();
+  fetchProjects();
+})
 </script>
