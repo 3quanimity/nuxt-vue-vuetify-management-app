@@ -5,7 +5,7 @@
     <v-container>
       <v-row>
         <v-col>
-          <v-card color="indigo" variant="flat">
+          <v-card color="indigo" variant="flat" v-if="usersData">
             <v-card-item title="Utilisateurs">
               <template v-slot:subtitle>
                 <v-icon
@@ -20,7 +20,7 @@
 
             <v-card-text class="py-0">
               <v-row align="center" no-gutters>
-                <v-col class="text-h2" cols="6">42</v-col>
+                <v-col class="text-h2" cols="6">{{ usersData.length }}</v-col>
                 <v-col class="text-right" cols="6">
                   <v-icon icon="mdi-account" size="88"></v-icon>
                 </v-col>
@@ -29,11 +29,11 @@
 
             <div class="d-flex py-3 justify-space-between">
               <v-list-item density="compact" prepend-icon="mdi-gender-male">
-                <v-list-item-subtitle>22</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ usersData.length - 1}}</v-list-item-subtitle>
               </v-list-item>
 
               <v-list-item density="compact" prepend-icon="mdi-gender-female">
-                <v-list-item-subtitle>20</v-list-item-subtitle>
+                <v-list-item-subtitle>1</v-list-item-subtitle>
               </v-list-item>
             </div>
 
@@ -46,7 +46,7 @@
         </v-col>
 
         <v-col>
-          <v-card color="indigo" variant="flat">
+          <v-card color="indigo" variant="flat" v-if="projectsData">
             <v-card-item title="Projets">
               <template v-slot:subtitle>
                 <v-icon
@@ -61,7 +61,7 @@
 
             <v-card-text class="py-0">
               <v-row align="center" no-gutters>
-                <v-col class="text-h2" cols="6">84</v-col>
+                <v-col class="text-h2" cols="6">{{ projectsData.length }}</v-col>
                 <v-col class="text-right" cols="6">
                   <v-icon icon="mdi-briefcase" size="88"></v-icon>
                 </v-col>
@@ -70,11 +70,11 @@
 
             <div class="d-flex py-3 justify-space-between">
               <v-list-item density="compact" prepend-icon="mdi-folder-open">
-                <v-list-item-subtitle>34 Projets Ouverts</v-list-item-subtitle>
+                <v-list-item-subtitle>1 Projets Ouverts</v-list-item-subtitle>
               </v-list-item>
 
               <v-list-item density="compact" prepend-icon="mdi-lock">
-                <v-list-item-subtitle>50 Projets Clos</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ projectsData.length - 1}} Projets Clos</v-list-item-subtitle>
               </v-list-item>
             </div>
 
@@ -120,5 +120,6 @@
 </template>
 
 <script lang="ts" setup>
-const { data } = await useFetch("http://localhost:3002/users");
+  const { data : usersData } = await useFetch("http://localhost:3002/users");
+  const { data : projectsData } = await useFetch("http://localhost:3002/projects");
 </script>
