@@ -9,7 +9,6 @@
       :headers="headers"
       :items="usersData"
       :items-per-page="10"
-      density="comfortable"
       hover
       class="elevation-1"
     >
@@ -18,6 +17,8 @@
           <v-toolbar-title>Gestion des Utilisateurs</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
+
+          <!-- add new user dialog -->
           <v-dialog v-model="dialog" max-width="500px">
             <template v-slot:activator="{ props }">
               <v-btn class="mb-2" color="primary" dark v-bind="props">
@@ -26,7 +27,7 @@
             </template>
             <v-card>
               <v-card-title>
-                <span class="text-h5">Utilisateur</span>
+                <span class="text-h5">Ajouter un Utilisateur</span>
               </v-card-title>
 
               <v-card-text>
@@ -53,13 +54,50 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+
+          <!-- delete user dialog -->
+          <v-dialog v-model="dialogDelete" max-width="500px">
+            <v-card>
+              <v-card-title class="text-h5"
+                >Supprimer un Utilisateur</v-card-title
+              >
+
+              <v-card-subtitle class="text-h7"
+                >Vous etes sur le point de supprimer
+                {{ idToDelete }} !</v-card-subtitle
+              >
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="blue-darken-1"
+                  variant="text"
+                  @click="closeDeleteDial"
+                >
+                  Annuler
+                </v-btn>
+                <v-btn
+                  color="red-darken-1"
+                  variant="text"
+                  @click="deleteItemConfirm"
+                >
+                  Supprimer
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-toolbar>
       </template>
 
+      <!-- isAdmin column -->
       <template v-slot:item.isAdmin="{ value }">
         <v-chip :color="value ? 'success' : 'error'" size="small">
           {{ value ? "Admin" : "User" }}
         </v-chip>
+      </template>
+
+      <!-- actions columns -->
+      <template v-slot:item.actions="{ item }">
+        <v-icon size="small" @click="deleteUser(item.id)">mdi-delete</v-icon>
       </template>
     </v-data-table>
   </v-sheet>
@@ -79,6 +117,8 @@ interface User {
 const usersData = ref<User[]>([]);
 const loading = ref(true);
 const dialog = ref(false);
+const dialogDelete = ref(false);
+const idToDelete = ref(-1);
 const userData = ref({
   email: "",
   pass: "",
@@ -89,6 +129,7 @@ const headers = [
   { title: "Name", key: "name" },
   { title: "Email", key: "email" },
   { title: "Status", key: "isAdmin" },
+  { title: "Actions", key: "actions", sortable: false },
 ];
 
 // METHODS
@@ -134,6 +175,28 @@ const addUser = async () => {
     closeDial();
     fetchUsers();
   }
+};
+
+const deleteUser = (id) => {
+  idToDelete.value = id;
+  dialogDelete.value = true;
+};
+
+const deleteItemConfirm = async () => {
+  const { data: responseData } = await useFetch(
+    `http://localhost:3002/users?id=${idToDelete.value}`,
+    { method: "delete" }
+  );
+
+  if (responseData.value) {
+    closeDeleteDial();
+    fetchUsers();
+  }
+};
+
+const closeDeleteDial = () => {
+  dialogDelete.value = false;
+  idToDelete.value = -1;
 };
 
 // LIFE CYCLES
