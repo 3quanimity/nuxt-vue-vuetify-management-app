@@ -31,27 +31,23 @@
 
               <v-card-text>
                 <v-container>
-                  <v-row>
-                    <v-col cols="12" md="6" sm="6">
-                      <v-text-field
-                        label="Email"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="6" sm="6">
-                      <v-text-field
-                        label="Mot de passe"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
+                  <v-text-field
+                    label="Email"
+                    v-model="userData.email"
+                  ></v-text-field>
+                  <v-text-field
+                    label="Mot de passe"
+                    v-model="userData.pass"
+                  ></v-text-field>
                 </v-container>
               </v-card-text>
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue-darken-1" variant="text">
+                <v-btn color="blue-darken-1" variant="text" @click="closeDial">
                   Annuler
                 </v-btn>
-                <v-btn color="blue-darken-1" variant="text">
+                <v-btn color="blue-darken-1" variant="text" @click="addUser">
                   Ajouter
                 </v-btn>
               </v-card-actions>
@@ -64,10 +60,6 @@
         <v-chip :color="value ? 'success' : 'error'" size="small">
           {{ value ? "Admin" : "User" }}
         </v-chip>
-      </template>
-
-      <template v-slot:no-data>
-        <v-alert type="info" title="No Users" text="No user data available" />
       </template>
     </v-data-table>
   </v-sheet>
@@ -86,7 +78,11 @@ interface User {
 // VARS
 const usersData = ref<User[]>([]);
 const loading = ref(true);
-const dialog = ref(false)
+const dialog = ref(false);
+const userData = ref({
+  email: "",
+  pass: "",
+});
 
 const headers = [
   { title: "ID", key: "id" },
@@ -117,6 +113,32 @@ const getNameFromEmail = (email) => {
   return email.split("@")[0];
 };
 
+const closeDial = () => {
+  dialog.value = false;
+};
+
+const addUser = async () => {
+  const newUser = {
+    email: userData.value.email,
+    pass: userData.value.pass,
+  };
+
+  const { data } = await useFetch("http://localhost:3002/users", {
+    method: "post",
+    body: newUser,
+  });
+
+  if (data.value) {
+    userData.value.email = "";
+    userData.value.pass = "";
+    closeDial();
+    fetchUsers();
+  }
+};
+
 // LIFE CYCLES
-onMounted(fetchUsers);
+// TODO: fix list not loading on refresh
+onMounted(() => {
+  fetchUsers();
+});
 </script>
