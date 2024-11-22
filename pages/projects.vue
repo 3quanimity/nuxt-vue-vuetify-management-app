@@ -5,7 +5,10 @@
     <!-- Projects List -->
     <v-row>
       <template v-for="project in projectsWithImages">
-        <ProjectSingle :project="project"></ProjectSingle>
+        <ProjectSingle
+          :project="project"
+          @delete-project="deleteProject"
+        ></ProjectSingle>
       </template>
     </v-row>
 
@@ -111,6 +114,17 @@ const createProject = async (project: any) => {
 
   if (responseData.value) {
     handleReset();
+    refresh();
+  }
+};
+
+const deleteProject = async (idToDelete: any) => {
+  const { data: responseData } = await useFetch(
+    `http://localhost:3002/projects?id=${idToDelete}`,
+    { method: "delete" }
+  );
+
+  if (responseData.value) {
     refresh();
   }
 };

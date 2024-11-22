@@ -25,7 +25,7 @@
         <v-btn
           color="indigo"
           text="Supprimer"
-          @click="deleteMe(project.id)"
+          @click="deleteProject(project.id)"
         ></v-btn>
       </v-card-actions>
     </v-card>
@@ -38,4 +38,16 @@ type ProjectProps = {
 };
 
 const props = defineProps<ProjectProps>();
+
+const emit = defineEmits(["deleteProject"]);
+
+const goToProject = async (id: any) => {
+  console.log(id);
+
+  await navigateTo({ name: "project-id", params: { id: id } });
+};
+
+const deleteProject = (id: any) => {
+  emit("deleteProject", id);
+};
 </script>
