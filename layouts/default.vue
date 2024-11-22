@@ -15,6 +15,7 @@
             :key="item.title"
             :title="item.title"
             :prepend-icon="item.prependIcon"
+            :active="getPath() == item.url"
             @click="navigateToPage(item.url)"
           />
         </v-list>
@@ -41,6 +42,7 @@
                   append-icon="mdi-cog-outline"
                   link
                   title="Options"
+                  @click="navigateToPage('/settings')"
                 />
                 <v-list-item
                   append-icon="mdi-logout"
@@ -95,6 +97,7 @@ const items = ref([
   },
 ]);
 const showContent = ref(false);
+const route = useRoute();
 
 // lifecycles
 onMounted(() => {
@@ -114,5 +117,9 @@ const navigateToPage = async (page: any) => {
 const logOut = () => {
   localStorage.removeItem("isAdmin");
   navigateToPage("/login");
+};
+
+const getPath = () => {
+  return route.path;
 };
 </script>
